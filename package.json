@@ -18,6 +18,6 @@
   "scripts": {
     "dev": "nodemon --exec ts-node --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "ts-node --transpile-only src/server.ts"
+    "start": "npx prisma migrate deploy && ts-node --transpile-only src/server.ts"
   }
 }
