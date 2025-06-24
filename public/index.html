@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cercil – Expand Your Trusted Circle</title>
+
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Brand palette -->
+  <style>
+    :root{
+      --c-bg:#000000;
+      --c-text:#ffffff;
+      --c-sub:#aaa8ac;
+      --c-accent:#ffff00;   /* sparing accent */
+    }
+  </style>
+</head>
+<body class="bg-[color:var(--c-bg)] text-[color:var(--c-text)] antialiased">
+
+  <!-- NAV -->
+  <header class="sticky top-0 z-20 border-b border-slate-800 bg-[color:var(--c-bg)]/80 backdrop-blur">
+    <div class="mx-auto max-w-6xl px-4 flex items-center justify-between h-16">
+      <h1 class="text-xl font-bold tracking-tight">Cercil</h1>
+      <a href="#join"
+         class="rounded-lg px-4 py-2 text-sm font-medium border-2"
+         style="border-color:var(--c-accent);color:var(--c-accent)">
+        Get Started
+      </a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="text-center py-24 px-4">
+    <h2 class="text-4xl sm:text-5xl font-extrabold leading-tight">
+      Grow your<br class="sm:hidden">
+      trusted network<br>
+      from 10 to&nbsp;1&nbsp;000
+    </h2>
+    <p class="mt-6 max-w-xl mx-auto text-lg" style="color:var(--c-sub)">
+      Invite 10 professionals you already trust. They invite theirs.  
+      A vetted circle snowballs into thousands of reliable contacts.
+    </p>
+    <a href="#join"
+       class="mt-8 inline-block rounded-lg px-8 py-3 font-semibold border-2"
+       style="border-color:var(--c-accent);color:var(--c-accent)">
+      Join the Beta
+    </a>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="border-t border-b border-slate-800">
+    <div class="mx-auto max-w-6xl px-4 py-16">
+      <h3 class="text-2xl font-bold text-center mb-12">Why Cercil?</h3>
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="p-6 bg-slate-900 rounded-xl shadow-inner">
+          <h4 class="font-semibold mb-2">10 → 1 000 Reach</h4>
+          <p class="text-sm" style="color:var(--c-sub)">
+            A small curated list from each member multiplies the network size exponentially.
+          </p>
+        </div>
+        <div class="p-6 bg-slate-900 rounded-xl shadow-inner">
+          <h4 class="font-semibold mb-2">Quality Assured</h4>
+          <p class="text-sm" style="color:var(--c-sub)">
+            Every invitation is a peer endorsement — no spam, just genuine connections.
+          </p>
+        </div>
+        <div class="p-6 bg-slate-900 rounded-xl shadow-inner">
+          <h4 class="font-semibold mb-2">Gamified Growth</h4>
+          <p class="text-sm" style="color:var(--c-sub)">
+            Earn badges as your Cercil expands and collaborations spark.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JOIN / CREATE -->
+  <section id="join" class="py-20 px-4">
+    <div class="mx-auto max-w-xl">
+      <h3 class="text-2xl font-bold text-center mb-10">Jump in</h3>
+
+      <!-- CREATE -->
+      <div class="mb-12 p-6 bg-slate-900 rounded-2xl shadow-inner">
+        <h4 class="font-semibold mb-4">Create your Cercil</h4>
+        <input id="createName" placeholder="Your name"
+               class="w-full mb-3 rounded-md border border-slate-700 bg-slate-800 px-3 py-2"/>
+        <button id="createBtn"
+                class="w-full rounded-md py-2 font-medium border-2"
+                style="border-color:var(--c-accent);color:var(--c-accent)">
+          Generate Invite Code
+        </button>
+        <p id="createOut" class="mt-3 text-sm font-semibold text-[color:var(--c-accent)]"></p>
+      </div>
+
+      <!-- JOIN -->
+      <div class="p-6 bg-slate-900 rounded-2xl shadow-inner">
+        <h4 class="font-semibold mb-4">Join a Cercil</h4>
+        <input id="joinName" placeholder="Your name"
+               class="w-full mb-3 rounded-md border border-slate-700 bg-slate-800 px-3 py-2"/>
+        <input id="joinCode" placeholder="Invite code"
+               class="w-full mb-3 rounded-md border border-slate-700 bg-slate-800 px-3 py-2"/>
+        <button id="joinBtn"
+                class="w-full rounded-md py-2 font-medium border-2"
+                style="border-color:var(--c-accent);color:var(--c-accent)">
+          Join Circle
+        </button>
+        <p id="joinOut" class="mt-3 text-sm font-semibold text-[color:var(--c-accent)]"></p>
+      </div>
+
+      <p id="stats" class="mt-10 text-center" style="color:var(--c-sub)"></p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800 py-6">
+    <p class="text-center text-xs" style="color:var(--c-sub)">
+      © 2025 Cercil • Built with ☕ in SA
+    </p>
+  </footer>
+
+  <!-- APP LOGIC (unchanged) -->
+  <script>
+    const $ = id => document.getElementById(id);
+
+    $("#createBtn").onclick = async () => {
+      const name = $("#createName").value.trim();
+      if (!name) return alert("Name required");
+      const r = await fetch("/api/create", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({name})
+      }).then(x=>x.json());
+      $("#createOut").textContent = "Share this code: " + r.code;
+      updateStats();
+    };
+
+    $("#joinBtn").onclick = async () => {
+      const name = $("#joinName").value.trim();
+      const code = $("#joinCode").value.trim();
+      if (!name||!code) return alert("Both fields required");
+      const r = await fetch("/api/join", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({name,code})
+      }).then(x=>x.json());
+      if(r.error) return alert(r.error);
+      $("#joinOut").textContent = "Joined! Your ID: " + r.id;
+      updateStats();
+    };
+
+    async function updateStats(){
+      const s = await fetch("/api/stats").then(x=>x.json());
+      $("#stats").textContent = "Total trusted pros in this Cercil: " + s.size;
+    }
+    updateStats();
+  </script>
+</body>
+</html>
