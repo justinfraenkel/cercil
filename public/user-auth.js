@@ -13,12 +13,16 @@
   uidInput.value = localStorage.getItem("userId") || "";
   uidInput.oninput = () => localStorage.setItem("userId", uidInput.value);
 
+  // API path config
+  const API_BASE = '';
+  const API_PREFIX = '/api';
+
   // Monkey-patch global fetch so every call adds the header
   const origFetch = window.fetch;
   window.fetch = (url, opts = {}) => {
     const headers = new Headers(opts.headers || {});
     const uid = uidInput.value || localStorage.getItem("userId") || "";
     if (uid) headers.set("X-User-Id", uid);
-    return origFetch(url, { ...opts, headers });
+    return origFetch(API_BASE + API_PREFIX + url, { ...opts, headers });
   };
 })(); 
