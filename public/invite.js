@@ -1,21 +1,67 @@
+/* ----------  invite.js  -----------------------------------------------
+   Handles:
+     • Generate Invite Code   (/api/create)
+     • Join Circle            (/api/join)
+     • Stats refresh          (/api/stats)
+   Depends on user-auth.js for X-User-Id header injection.
+----------------------------------------------------------------------- */
+
 (() => {
-  const btn    = document.getElementById("generateBtn");
-  const output = document.getElementById("inviteCode");   // <span> to display
+  const $ = id => document.getElementById(id);
 
-  if (!btn) { console.warn("generateBtn not found"); return; }
+  /* ------ CREATE -------------------------------------- */
+  const createBtn = $("createBtn");
+  if (createBtn) {
+    createBtn.addEventListener("click", async () => {
+      const name = $("createName").value.trim();
+      if (!name) return alert("Name required");
+      try {
+        const r = await fetch("/create", {
+          method: "POST",
+          body: JSON.stringify({ name })
+        }).then(res => res.json());
+        $("createOut").textContent = "Share this code: " + r.code;
+        refreshStats();
+        navigator.clipboard.writeText(r.code).catch(() => {});
+        alert("Invite code copied:\n" + r.code);
+      } catch (err) {
+        alert("Error creating invite:\n" + err);
+        console.error(err);
+      }
+    });
+  }
 
-  btn.addEventListener("click", async () => {
+  /* ------ JOIN ---------------------------------------- */
+  const joinBtn = $("joinBtn");
+  if (joinBtn) {
+    joinBtn.addEventListener("click", async () => {
+      const name = $("joinName").value.trim();
+      const code = $("joinCode").value.trim();
+      if (!name || !code) return alert("Both fields required");
+      try {
+        const r = await fetch("/join", {
+          method: "POST",
+          body: JSON.stringify({ name, code })
+        }).then(res => res.json());
+        if (r.error) return alert(r.error);
+        $("joinOut").textContent = "Joined! Your ID: " + r.id;
+        refreshStats();
+      } catch (err) {
+        alert("Error joining Cercil:\n" + err);
+        console.error(err);
+      }
+    });
+  }
+
+  /* ------ STATS --------------------------------------- */
+  async function refreshStats () {
     try {
-      const res  = await fetch("/api/invite", { method: "POST" });
-      if (!res.ok) throw new Error(await res.text());
-      const data = await res.json();
-
-      // show the code
-      if (output) output.textContent = data.code;
-      navigator.clipboard.writeText(data.code).catch(() => {});
-      alert("Invite code copied: " + data.code);
+      const s = await fetch("/stats").then(res => res.json());
+      $("stats").textContent =
+        "Total trusted pros in this Cercil: " + s.size;
     } catch (err) {
-      alert("Error generating invite: " + err);
+      console.error("Stats fetch failed:", err);
     }
-  });
-})(); 
+  }
+  refreshStats();
+})();
