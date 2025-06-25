@@ -11,3 +11,12 @@ model Member {
   code    String   @unique
   created DateTime @default(now())
 }
+model InviteToken {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  issuerId    String   @map("issuer_id")
+  issuedAt    DateTime @default(now())
+  redeemedBy  String?
+  redeemedAt  DateTime?
+  @@index([code])
+}
