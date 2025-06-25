@@ -23,6 +23,9 @@
     const headers = new Headers(opts.headers || {});
     const uid = uidInput.value || localStorage.getItem("userId") || "";
     if (uid) headers.set("X-User-Id", uid);
-    return origFetch(API_BASE + API_PREFIX + url, { ...opts, headers });
+    return origFetch(API_BASE + API_PREFIX + url, {
+      ...opts,
+      headers
+    });
   };
 })(); 
